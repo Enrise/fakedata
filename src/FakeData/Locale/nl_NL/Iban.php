@@ -31,12 +31,36 @@ class Iban extends \Enrise\FakeData\Iban
     protected $countryConstraints = [
         'length' => 10, // 18 - strlen('NL00AAAA')
         'bankcodes' => [
-            ['INGB', 7, 7],
-            ['RABO', 9, 10],
-            ['ABNA', 9, 10],
-            ['FRBK', 9, 10],
-            ['SNSB', 9, 10],
-            ['FVLB', 9, 10]
+            [
+                self::CC_BANKCODE => 'INGB',
+                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 7,
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 7
+            ],
+            [
+                self::CC_BANKCODE => 'RABO',
+                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
+            ],
+            [
+                self::CC_BANKCODE => 'ABNA',
+                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
+            ],
+            [
+                self::CC_BANKCODE => 'FRBK',
+                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
+            ],
+            [
+                self::CC_BANKCODE => 'SNSB',
+                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
+            ],
+            [
+                self::CC_BANKCODE => 'FVLB',
+                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
+            ]
         ]
     ];
 
@@ -45,7 +69,6 @@ class Iban extends \Enrise\FakeData\Iban
      */
     protected function isValidBankAccountNumber($value)
     {
-        $this->getDefaultOptions();
         return $this->passesElfProef($value);
     }
 
@@ -56,7 +79,9 @@ class Iban extends \Enrise\FakeData\Iban
     {
         return array_merge(
             parent::getDefaultOptions(),
-            [self::OPTION_COUNTRYCODE => 'NL']
+            [
+                self::OPTION_COUNTRYCODE => 'NL'
+            ]
         );
     }
 

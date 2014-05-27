@@ -27,13 +27,45 @@
 
 namespace unit;
 
+use Enrise\FakeData\Locale\nl_NL\Iban;
+
 class IbanTest extends \PHPUnit_Framework_TestCase
 {
     public function testNLIbanPattern()
     {
-        $generator = new \Enrise\FakeData\Locale\nl_NL\Iban();
+        $generator = new Iban();
 
         $this->assertEquals(18, strlen($generator->generate()));
         $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}[0-9]{10}~', $generator->generate());
+    }
+
+    public function testNLIbanOnlyPayment()
+    {
+        $generator = new Iban();
+
+        $options = [
+            Iban::OPTION_ACCOUNTTYPE => Iban::OPTION_ACCOUNTTYPE_PAYMENT
+        ];
+
+        for ($i = 0; $i < 10; $i++) {
+            $generate = $generator->generate($options);
+            $this->assertEquals(18, strlen($generate));
+            $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}((0[1-9][0-9]{8})|[0]{3}[1-9][0-9]{6})~', $generate);
+        }
+    }
+
+    public function testNLIbanOnlySavings()
+    {
+        $generator = new Iban();
+
+        $options = [
+            Iban::OPTION_ACCOUNTTYPE => Iban::OPTION_ACCOUNTTYPE_SAVINGS
+        ];
+
+        for ($i = 0; $i < 10; $i++) {
+            $generate = $generator->generate($options);
+            $this->assertEquals(18, strlen($generate));
+            $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}(([1-9][0-9]{9})|[0]{3}[1-9][0-9]{6})~', $generate);
+        }
     }
 }

@@ -33,6 +33,14 @@ abstract class Iban
 
     const OPTION_COUNTRYCODE = 'country_code';
     const OPTION_VALID = 'valid';
+    const OPTION_ACCOUNTTYPE = 'account_type';
+
+    const OPTION_ACCOUNTTYPE_PAYMENT = 1;
+    const OPTION_ACCOUNTTYPE_SAVINGS = 2;
+
+    const CC_BANKCODE = 'bankcode';
+    const CC_ACCOUNTNUMBER_PAYMENT_LENGTH = 'payment_length';
+    const CC_ACCOUNTNUMBER_SAVINGS_LENGTH = 'savings_length';
 
     /**
      * Generate an IBAN number based on the given options
@@ -44,29 +52,37 @@ abstract class Iban
     {
         $options = array_merge($this->getDefaultOptions(), $options);
 
-        $iban = $this->generateIbanNumber($options[self::OPTION_COUNTRYCODE], $options[self::OPTION_VALID]);
+        $iban = $this->generateIbanNumber(
+            $options[self::OPTION_COUNTRYCODE],
+            $options[self::OPTION_ACCOUNTTYPE],
+            $options[self::OPTION_VALID]
+        );
         $checkDigits = $this->generateCheckDigits($iban, $options[self::OPTION_COUNTRYCODE]);
         return sprintf('%s%s%s', $options[self::OPTION_COUNTRYCODE], $checkDigits, $iban);
     }
 
     /**
      * @param $countryCode
+     * @param $accountType
      * @param $valid
      * @return string
      */
-    protected function generateIbanNumber($countryCode, $valid)
+    protected function generateIbanNumber($countryCode, $accountType, $valid)
     {
         $length = $this->getAccountNumberLength($countryCode);
 
         $bankcodes = $this->countryConstraints['bankcodes'];
         $bankCode = $bankcodes[array_rand($bankcodes)];
-        $bankAccountNumber = $this->generateRandomAccountNumber($bankCode);
 
-        while ($this->isValidBankAccountNumber($bankAccountNumber) != $valid) {
-            $bankAccountNumber = $this->generateRandomAccountNumber($bankCode);
-        }
+        do {
+            $bankAccountNumber = $this->generateRandomAccountNumber($bankCode, $accountType);
+        } while ($this->isValidBankAccountNumber($bankAccountNumber) != $valid);
 
-        return sprintf('%s%s', $bankCode[0], str_pad((string)$bankAccountNumber, $length, '0', STR_PAD_LEFT));
+        return sprintf(
+            '%s%s',
+            $bankCode[self::CC_BANKCODE],
+            str_pad((string)$bankAccountNumber, $length, '0', STR_PAD_LEFT)
+        );
     }
 
     /**
@@ -109,7 +125,8 @@ abstract class Iban
     protected function getDefaultOptions()
     {
         return [
-            self::OPTION_VALID => true
+            self::OPTION_VALID => true,
+            self::OPTION_ACCOUNTTYPE => self::OPTION_ACCOUNTTYPE_PAYMENT | self::OPTION_ACCOUNTTYPE_SAVINGS
         ];
     }
 
@@ -138,10 +155,42 @@ abstract class Iban
      * Generate a random (domestic) bank account number
      *
      * @param $bankCode
+     * @param $accountType
      * @return string
+     * @throws \InvalidArgumentException
      */
-    protected function generateRandomAccountNumber($bankCode)
+    protected function generateRandomAccountNumber($bankCode, $accountType)
     {
-        return (string)rand((int)str_pad('1', $bankCode[1], '0'), (int)str_pad('9', $bankCode[2], '0'));
+        if ($accountType == (self::OPTION_ACCOUNTTYPE_PAYMENT | self::OPTION_ACCOUNTTYPE_SAVINGS)) {
+            $accountType = rand(self::OPTION_ACCOUNTTYPE_PAYMENT, self::OPTION_ACCOUNTTYPE_SAVINGS);
+        }
+
+        if ($accountType == self::OPTION_ACCOUNTTYPE_PAYMENT) {
+            $length = $bankCode[self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH];
+        } elseif ($accountType == self::OPTION_ACCOUNTTYPE_SAVINGS) {
+            $length = $bankCode[self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH];
+        } else {
+            throw new \InvalidArgumentException('Invalid account type provided');
+        }
+
+        return (string)rand((int)str_pad('1', $length, '0'), (int)str_pad('9', $length, '0'));
+    }
+
+    /**
+     * Get a random account number length
+     *
+     * @param $bankCode
+     * @return int
+     */
+    protected function getRandomAccountNumberLength($bankCode)
+    {
+        $randomType = rand(self::OPTION_ACCOUNTTYPE_PAYMENT, self::OPTION_ACCOUNTTYPE_SAVINGS);
+        if ($randomType == self::OPTION_ACCOUNTTYPE_SAVINGS) {
+            $length = $bankCode[self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH];
+            return $length;
+        } else {
+            $length = $bankCode[self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH];
+            return $length;
+        }
     }
 }
