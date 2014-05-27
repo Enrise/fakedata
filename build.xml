@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="EnriseFakeData" basedir="." default="build">
+
+    <php expression="include('vendor/autoload.php')"/>
+
+    <fileset dir="${project.basedir}" id="project.fileset.default">
+        <include name="src/**/*.php" />
+        <exclude name="**/vendor/**" />
+    </fileset>
+
+    <!-- PHP CodeSniffer -->
+    <target name="phpcs">
+        <echo msg="Checking code for style incompatibilities" />
+        <phpcodesniffer standard="PSR2" showSniffs="true" ShowWarnings="True" skipversioncheck="true" format="full">
+            <fileset refid="project.fileset.default" />
+            <formatter type="full" usefile="false" />
+        </phpcodesniffer>
+    </target>
+
+    <target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml and clover.xml">
+        <exec passthru="false" dir="${project.basedir}" executable="php">
+            <arg value="${project.basedir}/vendor/bin/phpunit" />
+            <arg value="--configuration" />
+            <arg path="${project.basedir}/phpunit.xml" />
+        </exec>
+    </target>
+
+    <target name="build"
+            description="DEFAULT"
+            depends="phpunit, phpcs">
+    </target>
+
+</project>
