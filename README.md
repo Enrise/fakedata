@@ -12,9 +12,6 @@ It also generates invalid IBAN numbers, if you need some of those.
 ## Other types of localized data
 For other types of (localized) fake data, please refer to [fzaninotto/Faker](https://github.com/fzaninotto/Faker).
 
-
-[Enrise](http://www.enrise.com/) &mdash; Code Cuisine
-
 # Contributing
 New localizations of the fake data this library provides is always welcome.
 
@@ -26,5 +23,7 @@ Keep in mind that your contributions comply to the following standards:
 
 You can easily verify this by running phing (after installing composer dev dependencies):
 ```bash
-vendor/bin/phing
+$ vendor/bin/phing
 ```
+
+Brought to you by [Enrise](http://www.enrise.com/) &mdash; Code Cuisine
