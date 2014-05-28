@@ -175,22 +175,4 @@ abstract class Iban
 
         return (string)rand((int)str_pad('1', $length, '0'), (int)str_pad('9', $length, '0'));
     }
-
-    /**
-     * Get a random account number length
-     *
-     * @param $bankCode
-     * @return int
-     */
-    protected function getRandomAccountNumberLength($bankCode)
-    {
-        $randomType = rand(self::OPTION_ACCOUNTTYPE_PAYMENT, self::OPTION_ACCOUNTTYPE_SAVINGS);
-        if ($randomType == self::OPTION_ACCOUNTTYPE_SAVINGS) {
-            $length = $bankCode[self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH];
-            return $length;
-        } else {
-            $length = $bankCode[self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH];
-            return $length;
-        }
-    }
 }
