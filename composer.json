@@ -25,5 +25,11 @@
   },
   "suggest": {
     "fzaninotto/faker": "Can generate other types of fake localized data"
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:enrise/validate"
+    }
+  ]
 }

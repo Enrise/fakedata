@@ -28,61 +28,17 @@ namespace Enrise\FakeData\Locale\nl_NL;
 
 use Enrise\FakeData\Options;
 
-class Iban extends \Enrise\FakeData\Iban
+class BankAccount extends \Enrise\FakeData\BankAccount
 {
-    protected $countryConstraints = [
-        'length' => 10, // 18 - strlen('NL00AAAA')
-        'bankcodes' => [
-            [
-                self::CC_BANKCODE => 'INGB',
-                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 7,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 7
-            ],
-            [
-                self::CC_BANKCODE => 'RABO',
-                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
-            ],
-            [
-                self::CC_BANKCODE => 'ABNA',
-                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
-            ],
-            [
-                self::CC_BANKCODE => 'FRBK',
-                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
-            ],
-            [
-                self::CC_BANKCODE => 'SNSB',
-                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
-            ],
-            [
-                self::CC_BANKCODE => 'FVLB',
-                self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 9,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 10
-            ]
-        ]
+    protected $accountLength = [
+        Options::BANKACCOUNTTYPE_PAYMENT => 9,
+        Options::BANKACCOUNTTYPE_SAVINGS => 10,
     ];
 
-    /**
-     * @inheritDoc
-     */
-    protected function isValidBankAccountNumber($value)
+    public function isValidBankAccountNumber($value)
     {
         return $this->passesElfProef($value);
     }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getDefaultOptions()
-    {
-        return parent::getDefaultOptions()->merge([Options::OPTION_COUNTRYCODE => 'NL']);
-    }
-
-
 
     /**
      * Tests whether the given value passes the so-called elfproef.
@@ -101,5 +57,29 @@ class Iban extends \Enrise\FakeData\Iban
         }
 
         return (0 == $total % 11);
+    }
+
+    /**
+     * Generate a random dutch bank account number
+     *
+     * @param $accountType
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    protected function generateRandomAccountNumber($accountType)
+    {
+        if ($accountType == (Options::BANKACCOUNTTYPE_PAYMENT | Options::BANKACCOUNTTYPE_SAVINGS)) {
+            $accountType = rand(Options::BANKACCOUNTTYPE_PAYMENT, Options::BANKACCOUNTTYPE_SAVINGS);
+        }
+
+        if ($accountType == Options::BANKACCOUNTTYPE_PAYMENT) {
+            $length = $this->accountLength[$accountType];
+        } elseif ($accountType == Options::BANKACCOUNTTYPE_SAVINGS) {
+            $length = $this->accountLength[$accountType];
+        } else {
+            throw new \InvalidArgumentException('Invalid account type provided');
+        }
+
+        return (string)rand((int)str_pad('1', $length, '0'), (int)str_pad('9', $length, '0'));
     }
 }

@@ -31,13 +31,6 @@ abstract class Iban
 {
     protected $countryConstraints = [];
 
-    const OPTION_COUNTRYCODE = 'country_code';
-    const OPTION_VALID = 'valid';
-    const OPTION_ACCOUNTTYPE = 'account_type';
-
-    const OPTION_ACCOUNTTYPE_PAYMENT = 1;
-    const OPTION_ACCOUNTTYPE_SAVINGS = 2;
-
     const CC_BANKCODE = 'bankcode';
     const CC_ACCOUNTNUMBER_PAYMENT_LENGTH = 'payment_length';
     const CC_ACCOUNTNUMBER_SAVINGS_LENGTH = 'savings_length';
@@ -50,15 +43,15 @@ abstract class Iban
      */
     public function generate(array $options = [])
     {
-        $options = array_merge($this->getDefaultOptions(), $options);
+        $options = $this->getDefaultOptions()->merge($options);
 
         $iban = $this->generateIbanNumber(
-            $options[self::OPTION_COUNTRYCODE],
-            $options[self::OPTION_ACCOUNTTYPE],
-            $options[self::OPTION_VALID]
+            $options[Options::OPTION_COUNTRYCODE],
+            $options[Options::OPTION_BANKACCOUNTTYPE],
+            $options[Options::OPTION_VALID]
         );
-        $checkDigits = $this->generateCheckDigits($iban, $options[self::OPTION_COUNTRYCODE]);
-        return sprintf('%s%s%s', $options[self::OPTION_COUNTRYCODE], $checkDigits, $iban);
+        $checkDigits = $this->generateCheckDigits($iban, $options[Options::OPTION_COUNTRYCODE]);
+        return sprintf('%s%s%s', $options[Options::OPTION_COUNTRYCODE], $checkDigits, $iban);
     }
 
     /**
@@ -124,10 +117,10 @@ abstract class Iban
      */
     protected function getDefaultOptions()
     {
-        return [
-            self::OPTION_VALID => true,
-            self::OPTION_ACCOUNTTYPE => self::OPTION_ACCOUNTTYPE_PAYMENT | self::OPTION_ACCOUNTTYPE_SAVINGS
-        ];
+        return new Options([
+            Options::OPTION_BANKACCOUNTTYPE => Options::BANKACCOUNTTYPE_PAYMENT | Options::BANKACCOUNTTYPE_SAVINGS,
+            Options::OPTION_VALID => true
+        ]);
     }
 
     /**
@@ -161,13 +154,13 @@ abstract class Iban
      */
     protected function generateRandomAccountNumber($bankCode, $accountType)
     {
-        if ($accountType == (self::OPTION_ACCOUNTTYPE_PAYMENT | self::OPTION_ACCOUNTTYPE_SAVINGS)) {
-            $accountType = rand(self::OPTION_ACCOUNTTYPE_PAYMENT, self::OPTION_ACCOUNTTYPE_SAVINGS);
+        if ($accountType == (Options::BANKACCOUNTTYPE_PAYMENT | Options::BANKACCOUNTTYPE_SAVINGS)) {
+            $accountType = rand(Options::BANKACCOUNTTYPE_PAYMENT, Options::BANKACCOUNTTYPE_SAVINGS);
         }
 
-        if ($accountType == self::OPTION_ACCOUNTTYPE_PAYMENT) {
+        if ($accountType == Options::BANKACCOUNTTYPE_PAYMENT) {
             $length = $bankCode[self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH];
-        } elseif ($accountType == self::OPTION_ACCOUNTTYPE_SAVINGS) {
+        } elseif ($accountType == Options::BANKACCOUNTTYPE_SAVINGS) {
             $length = $bankCode[self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH];
         } else {
             throw new \InvalidArgumentException('Invalid account type provided');

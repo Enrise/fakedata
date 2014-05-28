@@ -24,49 +24,31 @@
  *
  * @author Richard Tuin <richard@enrise.com>
  */
-
 namespace unit;
 
-use Enrise\FakeData\Locale\nl_NL\Iban;
+use Enrise\FakeData\Locale\nl_NL\BankAccount;
 use Enrise\FakeData\Options;
 
-class IbanTest extends \PHPUnit_Framework_TestCase
+class BankAccountTest extends \PHPUnit_Framework_TestCase
 {
-    public function testNLIbanPattern()
+    public function testBankAccountPattern()
     {
-        $generator = new Iban();
+        $generator = new BankAccount();
 
-        $this->assertEquals(18, strlen($generator->generate()));
-        $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}[0-9]{10}~', $generator->generate());
-    }
-
-    public function testNLIbanOnlyPayment()
-    {
-        $generator = new Iban();
-
-        $options = [
+        $optionsPayment = new Options([
             Options::OPTION_BANKACCOUNTTYPE => Options::BANKACCOUNTTYPE_PAYMENT
-        ];
-
-        for ($i = 0; $i < 10; $i++) {
-            $generate = $generator->generate($options);
-            $this->assertEquals(18, strlen($generate));
-            $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}((0[1-9][0-9]{8})|[0]{3}[1-9][0-9]{6})~', $generate);
-        }
-    }
-
-    public function testNLIbanOnlySavings()
-    {
-        $generator = new Iban();
-
-        $options = [
+        ]);
+        $optionsSavings = new Options([
             Options::OPTION_BANKACCOUNTTYPE => Options::BANKACCOUNTTYPE_SAVINGS
-        ];
+        ]);
 
+        // Since we are testing random data we must try our luck more than once
         for ($i = 0; $i < 10; $i++) {
-            $generate = $generator->generate($options);
-            $this->assertEquals(18, strlen($generate));
-            $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}(([1-9][0-9]{9})|[0]{3}[1-9][0-9]{6})~', $generate);
+            $this->assertEquals(9, strlen($generator->generate($optionsPayment)));
+            $this->assertEquals(10, strlen($generator->generate($optionsSavings)));
+
+            $this->assertRegExp('~[1-9][0-9]{8}~', $generator->generate($optionsPayment));
+            $this->assertRegExp('~[1-9][0-9]{9}~', $generator->generate($optionsSavings));
         }
     }
-}
+} 
