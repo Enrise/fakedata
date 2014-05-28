@@ -51,4 +51,10 @@ class BankAccountTest extends \PHPUnit_Framework_TestCase
             $this->assertRegExp('~[1-9][0-9]{9}~', $generator->generate($optionsSavings));
         }
     }
+
+    public function testWithDefaultOptions()
+    {
+        $generator = new BankAccount();
+        $this->assertNotEmpty($generator->generate());
+    }
 } 

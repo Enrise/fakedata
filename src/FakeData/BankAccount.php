@@ -52,7 +52,11 @@ abstract class BankAccount
      */
     public function generate(Options $options = null)
     {
-        $options = $this->getDefaultOptions()->merge($options);
+        if ($options == null) {
+            $options = $this->getDefaultOptions();
+        } else {
+            $options = $this->getDefaultOptions()->merge($options);
+        }
 
         $accountType = $options[Options::OPTION_BANKACCOUNTTYPE];
         $valid = $options[Options::OPTION_VALID];

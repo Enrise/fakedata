@@ -41,9 +41,13 @@ abstract class Iban
      * @param array $options
      * @return string
      */
-    public function generate(Options $options)
+    public function generate(Options $options = null)
     {
-        $options = $this->getDefaultOptions()->merge($options);
+        if ($options == null) {
+            $options = $this->getDefaultOptions();
+        } else {
+            $options = $this->getDefaultOptions()->merge($options);
+        }
 
         $iban = $this->generateIbanNumber(
             $options[Options::OPTION_COUNTRYCODE],

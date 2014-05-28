@@ -44,9 +44,9 @@ class IbanTest extends \PHPUnit_Framework_TestCase
     {
         $generator = new Iban();
 
-        $options = [
+        $options = new Options([
             Options::OPTION_BANKACCOUNTTYPE => Options::BANKACCOUNTTYPE_PAYMENT
-        ];
+        ]);
 
         for ($i = 0; $i < 10; $i++) {
             $generate = $generator->generate($options);
@@ -59,14 +59,20 @@ class IbanTest extends \PHPUnit_Framework_TestCase
     {
         $generator = new Iban();
 
-        $options = [
+        $options = new Options([
             Options::OPTION_BANKACCOUNTTYPE => Options::BANKACCOUNTTYPE_SAVINGS
-        ];
+        ]);
 
         for ($i = 0; $i < 10; $i++) {
             $generate = $generator->generate($options);
             $this->assertEquals(18, strlen($generate));
             $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}(([1-9][0-9]{9})|[0]{3}[1-9][0-9]{6})~', $generate);
         }
+    }
+
+    public function testWithDefaultOptions()
+    {
+        $generator = new Iban();
+        $this->assertNotEmpty($generator->generate());
     }
 }

@@ -82,8 +82,6 @@ class Iban extends \Enrise\FakeData\Iban
         return parent::getDefaultOptions()->merge([Options::OPTION_COUNTRYCODE => 'NL']);
     }
 
-
-
     /**
      * Tests whether the given value passes the so-called elfproef.
      *
