@@ -41,7 +41,7 @@ abstract class Iban
      * @param array $options
      * @return string
      */
-    public function generate(array $options = [])
+    public function generate(Options $options)
     {
         $options = $this->getDefaultOptions()->merge($options);
 
