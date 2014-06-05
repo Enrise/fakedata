@@ -36,7 +36,7 @@ class Iban extends \Enrise\FakeData\Iban
             [
                 self::CC_BANKCODE => 'INGB',
                 self::CC_ACCOUNTNUMBER_PAYMENT_LENGTH => 7,
-                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 7
+                self::CC_ACCOUNTNUMBER_SAVINGS_LENGTH => 8
             ],
             [
                 self::CC_BANKCODE => 'RABO',
@@ -71,6 +71,9 @@ class Iban extends \Enrise\FakeData\Iban
      */
     protected function isValidBankAccountNumber($value)
     {
+        if ($this->isGiroNumber($value)) {
+            return true;
+        }
         return $this->passesElfProef($value);
     }
 
@@ -99,5 +102,14 @@ class Iban extends \Enrise\FakeData\Iban
         }
 
         return (0 == $total % 11);
+    }
+
+    /**
+     * @param $value
+     * @return int
+     */
+    protected function isGiroNumber($value)
+    {
+        return preg_match('~^[Pp]?(000)?[0-9]{3,7}$~', $value);
     }
 }
