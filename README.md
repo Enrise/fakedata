@@ -12,6 +12,28 @@ It also generates invalid IBAN numbers, if you need some of those.
 ## Other types of localized data
 For other types of (localized) fake data, please refer to [fzaninotto/Faker](https://github.com/fzaninotto/Faker).
 
+## Examples
+Generate valid dutch bank account numbers:
+```php
+$generator = new \Enrise\FakeData\Locale\nl_NL\BankAccount();
+echo $generator->generate() . PHP_EOL;
+```
+
+Generate valid and invalid IBAN numbers:
+```php
+$iban = new \Enrise\FakeData\Locale\nl_NL\Iban();
+
+echo 'Valid numbers: ' . PHP_EOL;
+for ($i = 0; $i < 10; $i++) {
+    echo $iban->generate() . PHP_EOL;
+}
+
+echo PHP_EOL . 'Invalid numbers: ' . PHP_EOL;
+for ($i = 0; $i < 10; $i++) {
+    echo $iban->generate([$iban::OPTION_VALID => false]) . PHP_EOL;
+}
+```
+
 # Contributing
 New localizations of the fake data this library provides is always welcome.
 
