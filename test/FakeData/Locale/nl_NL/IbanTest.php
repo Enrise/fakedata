@@ -66,7 +66,7 @@ class IbanTest extends \PHPUnit_Framework_TestCase
         for ($i = 0; $i < 10; $i++) {
             $generate = $generator->generate($options);
             $this->assertEquals(18, strlen($generate));
-            $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}(([1-9][0-9]{9})|[0]{3}[1-9][0-9]{6})~', $generate);
+            $this->assertRegExp('~NL[0-9]{2}[A-Z]{4}(([1-9][0-9]{9})|[0]{2,3}[1-9][0-9]{6,7})~', $generate);
         }
     }
 
