@@ -4,7 +4,7 @@
   "keywords": ["data", "fake", "iban"],
   "homepage": "https://github.com/enrise/fakedata",
   "license": "MIT",
-  "version": "1.0.0-dev",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Richard Tuin",
@@ -25,11 +25,5 @@
   },
   "suggest": {
     "fzaninotto/faker": "Can generate other types of fake localized data"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@github.com:enrise/validate"
-    }
-  ]
+  }
 }
